@@ -1,29 +1,45 @@
+import json
+
 def load_contacts():
-    pass
+        try:
+            with open("contacts.json", "r", encoding="utf-8") as dosya:
+                return json.load(dosya) # JSON metnini Python listesine çevirir
+        except (FileNotFoundError, json.JSONDecodeError):
+                # Dosya yoksa veya içi bozuksa çökmek yerine boş liste döner
+            return []
 
 def save_contacts(contacts):
-    pass
+    with open("contacts.json", "w", encoding="utf-8") as f:
+        json.dump(contacts, f, ensure_ascii=False, indent=2)
 
 def add_contact(contacts):
-    if len(contacts)==0:
-        new_id=1
+    if len(contacts) == 0:
+        new_id = 1
     else:
-        maxid=0
+        maxid = 0
         for kisi in contacts:
-            if kisi["id"]>maxid:
+            if kisi["id"] > maxid:
                 maxid = kisi["id"]
         new_id = maxid + 1
+
+    name = input("Enter contact name: ").strip()
+    phone = input("Enter contact phone number: ").strip()
+    email = input("Enter contact email: ").strip()
+
+    if name == "" or phone == "":
+        print("\nHata: İsim ve Telefon alanları boş bırakılamaz! Ana menüye yönlendiriliyorsunuz.\n")
+        return  # Hata varsa fonksiyondan çık, sözlüğü hiç oluşturma
+
+    # 3. Her şey doğruysa sözlüğü oluşturup listeye ekliyoruz
     newcontact = {
         "id": new_id,
-        "name" : input("Enter contact name: "),
-        "phone": input("Enter contact phone number: "),
-        "email": input("Enter contact email: ")
-        
+        "name": name,
+        "phone": phone,
+        "email": email
     }
-
+    
     contacts.append(newcontact)
-    print(f"Öğrenci {new_id} ID'si ile eklendi!")
-
+    print(f"Kişi {new_id} ID'si ile eklendi!")
 def list_contacts(contacts):
     if len(contacts) == 0:
         print("\n Contacts are empty.\n")
@@ -32,15 +48,41 @@ def list_contacts(contacts):
             print(f'{kisi["id"]}, {kisi["name"]}, {kisi["email"]}, {kisi["phone"]}')
 
 def search_contact(contacts):
-    pass
+    arama_kelimesi=input("Enter the name of the contact you want to search: ").strip().lower()
+    eslesen=[]
+    for i in contacts:
+        if str(arama_kelimesi) in i["name"].strip().lower(): #== yerine in kullandık çünkü "==" tam eşleşme için kullanılır.
+            eslesen.append(i)
+    if len(eslesen)==0:
+        print("Eşleşme bulunamadı.") 
+    else:
+        for kisi in eslesen:
+            print(f'{kisi["id"]}, {kisi["name"]}, {kisi["email"]}, {kisi["phone"]}')
+
+
 
 def delete_contact(contacts):
-    pass
+    try:
+        silinecek_id = int(input("Silmek istediğiniz kişinin ID'sini girin: "))
+    except ValueError:
+        print("\nHata: Lütfen geçerli bir sayısal ID girin!\n")
+        return # Fonksiyondan erken çıkış
+        
+    bulundu = False
+    
+    for kisi in contacts:
+        if kisi["id"] == silinecek_id:
+            contacts.remove(kisi)
+            bulundu = True
+            print(f"\n{silinecek_id} ID'li Kisi silindi.")
+            break
+            
+    if not bulundu:
+        print(f"\nHata: {silinecek_id} ID'sine sahip bir kisi bulunamadi.\n")
 
 def main():
 
-    contacts =load(contacts
-                   )
+    contacts =load_contacts()
 
     while True:
 
@@ -54,6 +96,7 @@ def main():
         secim=input("Choose an option: ")
         if secim=="1":
             add_contact(contacts)
+            save_contacts(contacts)
     
         elif secim=="2":
             list_contacts(contacts)
@@ -63,6 +106,7 @@ def main():
         
         elif secim=="4":
             delete_contact(contacts)
+            save_contacts(contacts)
         
         elif secim=="5":
             break
