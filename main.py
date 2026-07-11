@@ -39,7 +39,8 @@ def delete_contact(contacts):
 
 def main():
 
-    contacts =[]
+    contacts =load(contacts
+                   )
 
     while True:
 
