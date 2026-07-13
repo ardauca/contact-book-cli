@@ -80,6 +80,46 @@ def delete_contact(contacts):
     if not bulundu:
         print(f"\nHata: {silinecek_id} ID'sine sahip bir kisi bulunamadi.\n")
 
+def update_contacts(contacts):
+    try:
+        guncellenecek_id = int(input("Guncellemek istediğiniz kişinin ID'sini girin: "))
+    except ValueError:
+        print("\nHata: Lütfen geçerli bir sayısal ID girin!\n")
+        return
+        
+    bulundu = False
+    degisiklik_var = False 
+    
+    for kisi in contacts:
+        if kisi["id"] == guncellenecek_id:  
+            bulundu = True       
+
+            new_name = input("Enter new contact name: ").strip()
+            new_phone = input("Enter new contact phone number: ").strip()
+            new_email = input("Enter new contact email: ").strip()
+            
+            if new_name != "":
+                kisi["name"] = new_name
+                degisiklik_var = True
+
+            if new_phone != "":
+                kisi["phone"] = new_phone
+                degisiklik_var = True
+
+            if new_email != "":
+                kisi["email"] = new_email
+                degisiklik_var = True
+            
+            if degisiklik_var:
+                print(f"\n{guncellenecek_id} ID'li kişi başarıyla güncellendi.")
+            else:
+                print("\nHata: Hiçbir değişiklik yapılmadı.")
+                
+            break
+            
+    if not bulundu:
+        print(f"\nHata: {guncellenecek_id} ID'sine sahip bir kisi bulunamadi.\n")
+
 def main():
 
     contacts =load_contacts()
@@ -90,8 +130,9 @@ def main():
         print("press 1 to add contact")
         print("press 2 to list contacts")
         print("press 3 to search contacts")
-        print("press 4 to delete contacts")
-        print("press 5 to exit")
+        print("press 4 to update contacts")
+        print("press 5 to delete contacts")
+        print("press 6 to exit")
             
         secim=input("Choose an option: ")
         if secim=="1":
@@ -103,12 +144,16 @@ def main():
         
         elif secim=="3":
             search_contact(contacts)
-        
+ 
         elif secim=="4":
+            update_contacts(contacts)
+            save_contacts(contacts)
+
+        elif secim=="5":
             delete_contact(contacts)
             save_contacts(contacts)
         
-        elif secim=="5":
+        elif secim=="6":
             break
         
         else:
